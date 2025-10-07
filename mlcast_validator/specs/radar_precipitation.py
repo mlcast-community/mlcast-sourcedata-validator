@@ -98,7 +98,7 @@ def validate_dataset(
     report += check_compression(
         ds,
         require_compression=True,
-        recommended_main="zstd",
+        recommended_compression="zstd",
         allow_coord_algs=["lz4"],
     )
 
@@ -222,6 +222,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     report = validate_dataset(args.dataset_path, storage_options=storage_options)
     report.console_print()
+
+    if report.has_fails():
+        return 1
     return 0
 
 

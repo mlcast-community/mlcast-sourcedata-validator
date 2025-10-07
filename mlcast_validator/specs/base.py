@@ -125,18 +125,11 @@ class ValidationReport:
         console.print(table)
         console.print(self.summarize())
 
+    def has_fails(self) -> bool:
+        """
+        Check if the report contains any FAIL results.
 
-# Example logging decorator modification
-def logging_decorator(func):
-    """
-    A decorator to log the module and function name in the Result class.
-    """
-
-    def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)
-        if isinstance(result, Result):
-            result.module = func.__module__
-            result.function = func.__name__
-        return result
-
-    return wrapper
+        Returns:
+            bool: True if there is at least one FAIL result, False otherwise.
+        """
+        return any(r.level == "FAIL" for r in self.results)
