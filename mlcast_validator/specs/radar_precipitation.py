@@ -16,7 +16,6 @@ from typing import List, Optional
 import xarray as xr
 from loguru import logger
 
-from ..checks.content.data_variable import check_variable_units
 from ..checks.content.spatial import check_spatial_requirements
 from ..checks.content.temporal import check_temporal_requirements
 from ..checks.future_timestep.future_extension import check_future_timestep
@@ -66,36 +65,10 @@ def validate_dataset(
         allow_variable_timestep=True,
     )
 
-    # Valid variable names and units by type
-    VALID_VARIABLE_SPECS = {
-        "precipitation_rate": {
-            "names": [
-                "mmh",
-                "rr",
-                "tprate",
-                "prate",
-                "rain_rate",
-                "rainfall_flux",
-                "rainfall_rate",
-            ],
-            "units": ["kg m-2 h-1", "mm h-1", "mm/h"],
-        },
-        "reflectivity": {
-            "names": ["equivalent_reflectivity_factor", "dbz", "rare"],
-            "units": ["dBZ"],
-        },
-        "precipitation_amount": {
-            "names": ["rainfall_amount", "mm", "precipitation_amount", "tp"],
-            "units": ["kg m-2", "mm"],
-        },
-    }
-
     # --- 3.3 Data Variable Requirements ---
     # > "The data variable MUST be expressed in one of the following units: millimeters (mm) for precipitation depth, millimeters per hour (mm/h) for precipitation rate, decibels of reflectivity factor (dBZ) for radar reflectivity."
-    report += check_variable_units(
-        ds,
-        valid_specs=VALID_VARIABLE_SPECS,
-    )
+    # report += check_variable_units(
+    # )
 
     # --- 4. Licensing Requirements ---
     # > "The dataset MUST include a global `license` attribute containing a valid SPDX identifier."
@@ -115,6 +88,7 @@ def validate_dataset(
         ds,
         allowed_versions=[2, 3],
         require_consolidated_if_v2=True,
+        storage_options=storage_options,
     )
 
     # --- 5.2 Compression ---

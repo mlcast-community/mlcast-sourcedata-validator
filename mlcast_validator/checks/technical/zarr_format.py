@@ -1,15 +1,49 @@
 from typing import Sequence
 
+import fsspec
 import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
 
 
+def has_consolidated_metadata(ds, storage_options=None):
+    """
+    Check whether a Zarr dataset opened via xarray has consolidated metadata.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        The dataset opened with `xr.open_zarr()`.
+    storage_options : dict, optional
+        The same storage_options that were used when opening the dataset.
+        Required for remote stores (e.g. S3, GCS).
+
+    Returns
+    -------
+    bool or None
+        True if `.zmetadata` exists,
+        False if not found,
+        None if source path cannot be determined.
+    """
+    # Try to infer the original store path (xarray stores this in encoding)
+    store_path = ds.encoding.get("source")
+    if store_path is None:
+        return None  # no source info (e.g. dataset from memory)
+
+    # Create filesystem using same storage options as xarray
+    fs, _, paths = fsspec.get_fs_token_paths(
+        store_path, storage_options=storage_options
+    )
+    store_root = paths[0].rstrip("/")
+    return fs.exists(f"{store_root}/.zmetadata")
+
+
 @log_function_call
 def check_zarr_format(
     ds: xr.Dataset,
     *,
+    storage_options: dict = None,
     allowed_versions: Sequence[int],
     require_consolidated_if_v2: bool,
 ) -> ValidationReport:
@@ -33,7 +67,7 @@ def check_zarr_format(
         )
 
     if zarr_format == 2 and require_consolidated_if_v2:
-        if hasattr(ds, "consolidated") and ds.consolidated:
+        if has_consolidated_metadata(ds, storage_options=storage_options):
             report.add(
                 "5.1",
                 "Consolidated metadata presence",

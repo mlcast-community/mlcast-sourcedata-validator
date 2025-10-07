@@ -3,8 +3,10 @@ from typing import Sequence
 import xarray as xr
 
 from ...specs.base import ValidationReport
+from ...utils.logging_decorator import log_function_call
 
 
+@log_function_call
 def check_compression(
     ds: xr.Dataset,
     *,

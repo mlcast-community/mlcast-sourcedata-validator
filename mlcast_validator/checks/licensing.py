@@ -1,8 +1,10 @@
 import xarray as xr
 
 from ..specs.base import ValidationReport
+from ..utils.logging_decorator import log_function_call
 
 
+@log_function_call
 def check_license(
     ds: xr.Dataset,
     require_spdx: bool,
