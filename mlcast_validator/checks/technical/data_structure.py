@@ -15,8 +15,14 @@ def check_data_structure(
 ) -> ValidationReport:
     """Check data structure requirements."""
     report = ValidationReport()
+    # Find all grid_mapping data variables since we don't want to check those
+    grid_mapping_vars = set()
+    for var in ds.data_vars:
+        if "grid_mapping" in ds[var].attrs:
+            grid_mapping_vars.add(ds[var].attrs["grid_mapping"])
+    data_vars = set(ds.data_vars) - grid_mapping_vars
 
-    for data_var in ds.data_vars:
+    for data_var in data_vars:
         data_array = ds[data_var]
 
         # Check dimension order

@@ -17,8 +17,14 @@ def check_georeferencing(
 ) -> ValidationReport:
     """Check georeferencing requirements."""
     report = ValidationReport()
+    # Find all grid_mapping data variables since we don't want to check those
+    grid_mapping_vars = set()
+    for var in ds.data_vars:
+        if "grid_mapping" in ds[var].attrs:
+            grid_mapping_vars.add(ds[var].attrs["grid_mapping"])
+    data_vars = set(ds.data_vars) - grid_mapping_vars
 
-    for data_var in ds.data_vars:
+    for data_var in data_vars:
         data_array = ds[data_var]
         if require_grid_mapping and "grid_mapping" not in data_array.attrs:
             report.add(
