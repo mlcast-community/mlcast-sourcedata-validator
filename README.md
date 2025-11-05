@@ -16,44 +16,58 @@ This tool addresses two key needs identified in the community:
 
 ### What does it validate?
 
-The validator checks both **specification compliance** and **practical tool compatibility**:
+The validator checks both **specification compliance** and **practical tool compatibility**, for example for radar precipitation datasets it checks:
 
-**Minimum Requirements for Dataset Acceptance:**
-- 2D radar composite at 1km resolution or finer
-- At least 256×256 pixel valid sensing area
-- Minimum 3 years of temporal coverage
-- Consistent spatial domain across all timesteps
-- Data variable in mm (depth), mm/h (rate), or dBZ (reflectivity)
+- **Minimum Requirements for Dataset Acceptance:**
+    - 2D radar composite at 1km resolution or finer
+    - At least 256×256 pixel valid sensing area
+    - Minimum 3 years of temporal coverage
+    - Consistent spatial domain across all timesteps
+    - Data variable in mm (depth), mm/h (rate), or dBZ (reflectivity)
 
-**Technical Requirements:**
-- GeoZarr format (Zarr v2/v3 with proper georeferencing)
-- CF-compliant coordinate and variable names
-- Correct dimension ordering (time × H × W)
-- Proper chunking strategy (1 chunk per timestep)
-- ZSTD compression (recommended)
-- NaN values for missing/out-of-range data
-- License metadata (CC-BY, CC-BY-SA, OGL, etc.)
+- **Technical Requirements:**
+    - GeoZarr format (Zarr v2/v3 with proper georeferencing)
+    - CF-compliant coordinate and variable names
+    - Correct dimension ordering (time × H × W)
+    - Proper chunking strategy (1 chunk per timestep)
+    - ZSTD compression (recommended)
+    - NaN values for missing/out-of-range data
+    - License metadata (CC-BY, CC-BY-SA, OGL, etc.)
 
-**Tool Compatibility:**
-- xarray can load and slice the data correctly
-- GDAL can interpret the georeferencing (WKT parsing)
-- cartopy can create CRS objects and transform coordinates
-- Cross-tool CRS consistency checks
+- **Tool Compatibility:**
+    - xarray can load and slice the data correctly
+    - GDAL can interpret the georeferencing (WKT parsing)
+    - cartopy can create CRS objects and transform coordinates
+    - Cross-tool CRS consistency checks
 
-For complete details, see the [MLCast Zarr Specification v1.0](docs/mlcast_zarr_spec_v1.0.md).
+## How is the tool implemented organized?
+
+*TDB* based on new spec document structure being discussed in https://github.com/mlcast-community/mlcast-sourcedata-validator/pull/4.
+
 
 ## Example usage
 
-You can run the validator if you have `uv` installed simply by marking the file as executable and running it (dependencies are included in the script following PEP 723 and `uv` picks them up atuomagically).
+Until `mllam-sourcedata-validator` is published to PyPI, the easiest way to run it is to use [uv](https://docs.astral.sh/uv/getting-started/installation/) to run it directly from the GitHub repository:
 
-For example:
-```
-./mlcast_validator_source_radar.py --verbose --debug /path/to/zarr/file.zarr
+```bash
+uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.radar_precipitation <dataset-path>
 ```
 
-The validator supports also remote zarr hosted on S3 buckets. We can run it on the Radklim Zarr already available in the intake catalog:
+I.e. you can validate a local Zarr dataset like this:
+```bash
+uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.radar_precipitation /path/to/zarr/file.zarr
 ```
-./mlcast_validator_source_radar.py --verbose --debug \
-    s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/ --anon \
-    --endpoint-url https://object-store.os-api.cci2.ecmwf.int
+
+The validator supports also remote zarr hosted in S3 buckets at custom endpoints. We can run it on the Radklim Zarr already available in the intake catalog:
+
+```bash
+uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.radar_precipitation --s3-endpoint-url https://object-store.os-api.cci2.ecmwf.int --s3-anon s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/
+```
+
+Or you can of course clone the repository and run it directly:
+
+```bash
+git clone
+cd mlcast-sourcedata-validator
+python -m mlcast_validator.specs.radar_precipitation /path/to/zarr/file.zarr
 ```
