@@ -11,7 +11,7 @@ from rich.table import Table
 # Data structures
 # -------------------------
 @dataclass
-class Result:
+class ValidationResult:
     section: str
     requirement: str
     level: str  # "FAIL" | "WARNING" | "PASS"
@@ -30,7 +30,7 @@ class Result:
 @dataclass
 class ValidationReport:
     ok: bool = True
-    results: List[Result] = field(default_factory=list)
+    results: List[ValidationResult] = field(default_factory=list)
 
     def add(self, section: str, requirement: str, level: str, detail: str = "") -> None:
         """
@@ -45,7 +45,7 @@ class ValidationReport:
         Returns:
             None
         """
-        self.results.append(Result(section, requirement, level, detail))
+        self.results.append(ValidationResult(section, requirement, level, detail))
 
     def summarize(self) -> str:
         """
@@ -69,23 +69,18 @@ class ValidationReport:
         Returns:
             ValidationReport: The updated validation report (self).
         """
-        self.results.extend(other.results)
-        self.ok = self.ok and other.ok
+        if isinstance(other, ValidationReport):
+            self.results.extend(other.results)
+            self.ok = self.ok and other.ok
+        elif isinstance(other, ValidationResult):
+            self.results.append(other)
+            if other.level == "FAIL":
+                self.ok = False
+        else:
+            raise TypeError(
+                "Can only add ValidationReport or ValidationResult instances."
+            )
         return self
-
-    def __add__(self, other: "ValidationReport") -> "ValidationReport":
-        """
-        Combine two ValidationReports into a new one.
-
-        Args:
-            other (ValidationReport): The other validation report to combine.
-
-        Returns:
-            ValidationReport: A new validation report containing results from both.
-        """
-        out = ValidationReport(ok=self.ok and other.ok)
-        out.results = [*self.results, *other.results]
-        return out
 
     def console_print(self) -> None:
         """

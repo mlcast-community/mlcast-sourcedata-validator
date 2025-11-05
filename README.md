@@ -47,13 +47,13 @@ For complete details, see the [MLCast Zarr Specification v1.0](docs/mlcast_zarr_
 You can run the validator if you have `uv` installed simply by marking the file as executable and running it (dependencies are included in the script following PEP 723 and `uv` picks them up atuomagically).
 
 For example:
-```
-./mlcast_validator_source_radar.py --verbose --debug /path/to/zarr/file.zarr
+```bash
+python -m mlcast_validator.specs.radar_precipitation /path/to/zarr/file.zarr
 ```
 
-The validator supports also remote zarr hosted on S3 buckets. We can run it on the Radklim Zarr already available in the intake catalog:
-```
-./mlcast_validator_source_radar.py --verbose --debug \
-    s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/ --anon \
-    --endpoint-url https://object-store.os-api.cci2.ecmwf.int
+The validator supports also remote zarr hosted in S3 buckets at custom endpoints. We can run it on the Radklim Zarr already available in the intake catalog:
+```bash
+python -m mlcast_validator.specs.radar_precipitation \
+    s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/ --s3-anon \
+    --s3-endpoint-url https://object-store.os-api.cci2.ecmwf.int
 ```

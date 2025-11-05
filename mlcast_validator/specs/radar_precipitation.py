@@ -28,6 +28,7 @@ from ..checks.technical.data_structure import check_data_structure
 from ..checks.technical.georeferencing import check_georeferencing
 from ..checks.technical.zarr_format import check_zarr_format
 from ..checks.timestep_handling.variable_timestep import check_variable_timestep
+from ..checks.tool_compatibility import check_tool_compatibility
 from .base import ValidationReport
 
 
@@ -183,6 +184,14 @@ def validate_dataset(
         ds,
         required_attrs=["license"],
         conditional_attrs=["consistent_timestep_start", "last_valid_timestep"],
+    )
+
+    # --- 10. Tool Compatibility ---
+    # > "The most recent version of the following tools MUST successfully open and interpret (including proper georeferencing) the Zarr dataset:
+    # > xarray, GDAL, cartopy."
+    report += check_tool_compatibility(
+        ds,
+        tools=["xarray", "GDAL", "cartopy"],
     )
 
     return report
