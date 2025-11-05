@@ -1,5 +1,5 @@
 # MLCast Radar Data Archive Specification
-**Version 0.1.0**
+**Version 0.2.0**
 **Status: In development**
 
 ## 1. Introduction
