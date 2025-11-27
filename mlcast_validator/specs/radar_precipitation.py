@@ -3,11 +3,20 @@
 """
 ## 1. Introduction
 
-This document specifies the requirements for 2D radar precipitation and reflectivity composite datasets to be included in the MLCast data collection. The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
+This document specifies the requirements for 2D radar precipitation and
+reflectivity composite datasets to be included in the MLCast data collection.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
+interpreted as described in RFC 2119.
 
 ## 2. Scope
 
-This specification applies to 2D radar composite datasets (merged from multiple radar sources) intended for machine learning applications in weather and climate research. Single-radar datasets are explicitly excluded from this specification.
+This specification applies to 2D radar composite datasets (merged from multiple
+radar sources) intended for machine learning applications in weather and
+climate research. Single-radar datasets are explicitly excluded from this
+specification.
+
+(see inline comments below for rest of specification)
 """
 
 import argparse
@@ -25,7 +34,7 @@ from ..checks.data_vars.chunking import check_chunking_strategy
 from ..checks.data_vars.compression import check_compression
 from ..checks.data_vars.data_structure import check_data_structure
 from ..checks.data_vars.georeferencing import check_georeferencing
-from ..checks.global_attributes.attributes import check_global_attributes
+from ..checks.global_attributes.conditional import check_conditional_global_attributes
 from ..checks.global_attributes.licensing import check_license
 from ..checks.global_attributes.zarr_format import check_zarr_format
 from .base import ValidationReport
@@ -44,6 +53,11 @@ def validate_dataset(
     ds = xr.open_zarr(path, storage_options=storage_options)
     logger.info(f"Opened dataset at {path}")
     logger.info(str(ds))
+
+    # -------------------------
+    # 3. Coordinate Requirements
+    # -------------------------
+    # Overall section for coordinate requirements
 
     # --- 3.1 Coordinate Variables ---
     # > "Coordinate variable names MUST follow CF conventions and use the following names: `x`, `y`, `lat`, `lon`, `time`."
@@ -90,6 +104,11 @@ def validate_dataset(
         ds,
         allow_variable_timestep=True,
     )
+
+    # -------------------------
+    # 4. Data Variable Requirements
+    # -------------------------
+    # Overall section for data variable requirements
 
     # --- 4.1 Chunking Strategy ---
     # > "The dataset MUST use a chunking strategy of 1 × height × width (one chunk per timestep)."
@@ -143,12 +162,10 @@ def validate_dataset(
         require_bbox=True,
     )
 
-    # --- 5.1 Global Attributes ---
-    # > "The following global attributes are REQUIRED: `license`."
+    # --- 5.1 Conditional Global Attributes ---
     # > "The following global attributes are CONDITIONAL: `consistent_timestep_start`, `last_valid_timestep`."
-    report += check_global_attributes(
+    report += check_conditional_global_attributes(
         ds,
-        required_attrs=["license"],
         conditional_attrs=["consistent_timestep_start", "last_valid_timestep"],
     )
 
