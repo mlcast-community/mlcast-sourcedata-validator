@@ -16,18 +16,18 @@ from typing import List, Optional
 import xarray as xr
 from loguru import logger
 
-from ..checks.content.spatial import check_spatial_requirements
-from ..checks.content.temporal import check_temporal_requirements
-from ..checks.future_timestep.future_extension import check_future_timestep
+from ..checks.coordinates.coordinate_variables import check_coordinate_variables
+from ..checks.coordinates.future_extension import check_future_timestep
+from ..checks.coordinates.spatial import check_spatial_requirements
+from ..checks.coordinates.temporal import check_temporal_requirements
+from ..checks.coordinates.variable_timestep import check_variable_timestep
+from ..checks.data_variables.chunking import check_chunking_strategy
+from ..checks.data_variables.compression import check_compression
+from ..checks.data_variables.data_structure import check_data_structure
+from ..checks.data_variables.georeferencing import check_georeferencing
 from ..checks.global_attributes.attributes import check_global_attributes
-from ..checks.licensing import check_license
-from ..checks.technical.chunking import check_chunking_strategy
-from ..checks.technical.compression import check_compression
-from ..checks.technical.coordinate_variables import check_coordinate_variables
-from ..checks.technical.data_structure import check_data_structure
-from ..checks.technical.georeferencing import check_georeferencing
-from ..checks.technical.zarr_format import check_zarr_format
-from ..checks.timestep_handling.variable_timestep import check_variable_timestep
+from ..checks.global_attributes.licensing import check_license
+from ..checks.global_attributes.zarr_format import check_zarr_format
 from .base import ValidationReport
 
 
