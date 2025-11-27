@@ -10,7 +10,7 @@ SECTION_ID = f"{PARENT_SECTION_ID}.1"
 
 
 @log_function_call
-def check_coordinate_variables(
+def check_coordinate_names(
     ds: xr.Dataset,
     *,
     required_names: Sequence[str],
