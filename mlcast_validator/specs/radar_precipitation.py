@@ -39,6 +39,9 @@ from ..checks.global_attributes.licensing import check_license
 from ..checks.global_attributes.zarr_format import check_zarr_format
 from .base import ValidationReport
 
+VERSION = "0.2.0"
+IDENTIFIER = __spec__.name.split(".")[-1]
+
 
 # -------------------------
 # Core public API
@@ -191,13 +194,6 @@ def validate_dataset(
         storage_options=storage_options,
     )
 
-    # --- 6. Missing Data and Special Values ---
-    # > "NaN values MUST be used to indicate: Pixels outside the radar sensing range, Pixels blocked by orography, Partially or totally missing scans."
-    # XXX: We don't check for the presense of NaNs because that would require
-    # us to check all values in the dataset (i.e. fetch the whole dataset) and
-    # as only float types are allowed the use of NaNs is implied.
-    # TODO: should we check for other special values here?
-
     return report
 
 
@@ -232,6 +228,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         storage_options["endpoint_url"] = args.s3_endpoint_url
     if args.s3_anon:
         storage_options["anon"] = True
+
+    # get the spec identifier from the module name
+
+    logger.info(f"Validating with {IDENTIFIER} spec version {VERSION}")
 
     # storage_options must default to None if not set, as some backends
     # (e.g., local filesystem) do not accept an empty dict.
