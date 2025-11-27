@@ -214,13 +214,17 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    storage_options = {}
+    storage_options = None
     if args.s3_endpoint_url:
         storage_options["endpoint_url"] = args.s3_endpoint_url
     if args.s3_anon:
         storage_options["anon"] = True
 
-    report = validate_dataset(args.dataset_path, storage_options=storage_options)
+    # storage_options must default to None if not set, as some backends
+    # (e.g., local filesystem) do not accept an empty dict.
+    report = validate_dataset(
+        args.dataset_path, storage_options=storage_options or None
+    )
     report.console_print()
 
     if report.has_fails():
