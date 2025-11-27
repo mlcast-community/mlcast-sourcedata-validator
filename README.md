@@ -50,18 +50,18 @@ The validator checks both **specification compliance** and **practical tool comp
 Until `mllam-sourcedata-validator` is published to PyPI, the easiest way to run it is to use [uv](https://docs.astral.sh/uv/getting-started/installation/) to run it directly from the GitHub repository:
 
 ```bash
-uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.radar_precipitation <dataset-path>
+uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.source_data.radar_precipitation <dataset-path>
 ```
 
 I.e. you can validate a local Zarr dataset like this:
 ```bash
-uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.radar_precipitation /path/to/zarr/file.zarr
+uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.source_data.radar_precipitation /path/to/zarr/file.zarr
 ```
 
 The validator supports also remote zarr hosted in S3 buckets at custom endpoints. We can run it on the Radklim Zarr already available in the intake catalog:
 
 ```bash
-uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.radar_precipitation --s3-endpoint-url https://object-store.os-api.cci2.ecmwf.int --s3-anon s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/
+uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.source_data.radar_precipitation --s3-endpoint-url https://object-store.os-api.cci2.ecmwf.int --s3-anon s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/
 ```
 
 Or you can of course clone the repository and run it directly:
@@ -69,5 +69,5 @@ Or you can of course clone the repository and run it directly:
 ```bash
 git clone
 cd mlcast-sourcedata-validator
-python -m mlcast_validator.specs.radar_precipitation /path/to/zarr/file.zarr
+python -m mlcast_validator.specs.source_data.radar_precipitation /path/to/zarr/file.zarr
 ```

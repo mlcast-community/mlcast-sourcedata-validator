@@ -25,21 +25,22 @@ from typing import List, Optional
 import xarray as xr
 from loguru import logger
 
-from ..checks.coords.future_extension import check_future_timestep
-from ..checks.coords.names import check_coordinate_names
-from ..checks.coords.spatial import check_spatial_requirements
-from ..checks.coords.temporal import check_temporal_requirements
-from ..checks.coords.variable_timestep import check_variable_timestep
-from ..checks.data_vars.chunking import check_chunking_strategy
-from ..checks.data_vars.compression import check_compression
-from ..checks.data_vars.data_structure import check_data_structure
-from ..checks.data_vars.georeferencing import check_georeferencing
-from ..checks.global_attributes.conditional import check_conditional_global_attributes
-from ..checks.global_attributes.licensing import check_license
-from ..checks.global_attributes.zarr_format import check_zarr_format
-from ..checks.tool_compatibility.cartopy import check_cartopy_compatibility
-from ..checks.tool_compatibility.gdal import check_gdal_compatibility
-from .base import ValidationReport
+from ... import __version__
+from ...checks.coords.future_extension import check_future_timestep
+from ...checks.coords.names import check_coordinate_names
+from ...checks.coords.spatial import check_spatial_requirements
+from ...checks.coords.temporal import check_temporal_requirements
+from ...checks.coords.variable_timestep import check_variable_timestep
+from ...checks.data_vars.chunking import check_chunking_strategy
+from ...checks.data_vars.compression import check_compression
+from ...checks.data_vars.data_structure import check_data_structure
+from ...checks.data_vars.georeferencing import check_georeferencing
+from ...checks.global_attributes.conditional import check_conditional_global_attributes
+from ...checks.global_attributes.licensing import check_license
+from ...checks.global_attributes.zarr_format import check_zarr_format
+from ...checks.tool_compatibility.cartopy import check_cartopy_compatibility
+from ...checks.tool_compatibility.gdal import check_gdal_compatibility
+from ..base import ValidationReport
 
 VERSION = "0.2.0"
 IDENTIFIER = __spec__.name.split(".")[-1]
@@ -248,7 +249,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # get the spec identifier from the module name
 
-    logger.info(f"Validating with {IDENTIFIER} spec version {VERSION}")
+    logger.info(
+        f"Validating with {IDENTIFIER} spec version {VERSION} with mlcast-validator {__version__}"
+    )
 
     # storage_options must default to None if not set, as some backends
     # (e.g., local filesystem) do not accept an empty dict.
