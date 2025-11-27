@@ -60,12 +60,13 @@ def validate_dataset(
     # Overall section for coordinate requirements
 
     # --- 3.1 Coordinate Variables ---
-    # > "Coordinate variable names MUST follow CF conventions and use the following names: `x`, `y`, `lat`, `lon`, `time`."
-    # > "All coordinate variables SHOULD include CF-compliant attributes (`long_name`, `standard_name` and `units`)."
+    # > "The dataset MUST expose CF-compliant coordinates: latitude/longitude and projected x/y."
+    # > "Coordinate metadata MUST provide `standard_name`/`axis`/`units` per CF (with a valid `time` coordinate as well)."
     report += check_coordinate_names(
         ds,
-        required_names=["x", "y", "lat", "lon", "time"],
-        require_cf_attrs=["long_name", "standard_name", "units"],
+        require_time_coord=True,
+        require_projected_coords=True,
+        require_latlon_coords=True,
     )
 
     # --- 3.2 Future Timestep Extension ---
