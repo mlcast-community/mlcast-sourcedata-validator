@@ -214,7 +214,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    storage_options = None
+    storage_options = {}
     if args.s3_endpoint_url:
         storage_options["endpoint_url"] = args.s3_endpoint_url
     if args.s3_anon:
