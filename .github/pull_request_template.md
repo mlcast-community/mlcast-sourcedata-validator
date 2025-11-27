@@ -16,6 +16,7 @@
 - [ ] ✨ New feature (non-breaking change that adds functionality, e.g. adding a new dataset)
 - [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected, e.g. removing or moving a dataset in the catalog)
 - [ ] 📖 Documentation (Addition or improvements to documentation)
+- [ ] 🔨 Maintenance (Fixing issues with CI/CD and changes to upstream dependencies)
 
 ## Checklist before requesting a review
 
