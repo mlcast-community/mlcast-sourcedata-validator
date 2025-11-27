@@ -37,6 +37,8 @@ from ..checks.data_vars.georeferencing import check_georeferencing
 from ..checks.global_attributes.conditional import check_conditional_global_attributes
 from ..checks.global_attributes.licensing import check_license
 from ..checks.global_attributes.zarr_format import check_zarr_format
+from ..checks.tool_compatibility.cartopy import check_cartopy_compatibility
+from ..checks.tool_compatibility.gdal import check_gdal_compatibility
 from .base import ValidationReport
 
 VERSION = "0.2.0"
@@ -193,6 +195,21 @@ def validate_dataset(
         require_consolidated_if_v2=True,
         storage_options=storage_options,
     )
+
+    # -------------------------
+    # 6. Tool Compatibility Requirements
+    # -------------------------
+    # Practical interoperability checks derived from the standalone validator.
+
+    # --- 6.1 GDAL Compatibility ---
+    # > "The dataset SHOULD expose georeferencing metadata readable by GDAL, including a CRS WKT."
+    # > "A basic GeoTIFF export SHOULD roundtrip through GDAL with geotransform/projection metadata."
+    report += check_gdal_compatibility(ds)
+
+    # --- 6.2 Cartopy Compatibility ---
+    # > "The CRS WKT SHOULD be parseable by cartopy."
+    # > "Coordinate grids SHOULD transform cleanly into PlateCarree for mapping workflows."
+    report += check_cartopy_compatibility(ds)
 
     return report
 
