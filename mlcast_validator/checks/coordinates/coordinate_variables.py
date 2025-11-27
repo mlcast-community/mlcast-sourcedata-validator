@@ -4,6 +4,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.1"
 
 
 @log_function_call
@@ -20,7 +23,7 @@ def check_coordinate_variables(
         if coord in ds.coords:
             coord_var = ds.coords[coord]
             report.add(
-                "5.5",
+                SECTION_ID,
                 f"Coordinate variable '{coord}' presence",
                 "PASS",
                 f"Coordinate variable '{coord}' is present",
@@ -32,21 +35,21 @@ def check_coordinate_variables(
             ]
             if not missing_attrs:
                 report.add(
-                    "5.5",
+                    SECTION_ID,
                     f"CF attributes for '{coord}'",
                     "PASS",
                     f"Coordinate variable '{coord}' has all required CF attributes",
                 )
             else:
                 report.add(
-                    "5.5",
+                    SECTION_ID,
                     f"CF attributes for '{coord}'",
                     "FAIL",
                     f"Coordinate variable '{coord}' is missing CF attributes: {missing_attrs}",
                 )
         else:
             report.add(
-                "5.5",
+                SECTION_ID,
                 f"Coordinate variable '{coord}' presence",
                 "FAIL",
                 f"Coordinate variable '{coord}' is missing",

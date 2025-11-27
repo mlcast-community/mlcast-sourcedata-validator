@@ -4,6 +4,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.3"
 
 
 @log_function_call
@@ -28,14 +31,14 @@ def check_data_structure(
         # Check dimension order
         if tuple(data_array.dims) == tuple(dim_order):
             report.add(
-                "5.4",
+                SECTION_ID,
                 f"Dimension order for {data_var}",
                 "PASS",
                 f"Dimension order matches {dim_order}",
             )
         else:
             report.add(
-                "5.4",
+                SECTION_ID,
                 f"Dimension order for {data_var}",
                 "FAIL",
                 f"Expected dimension order {dim_order}, found {data_array.dims}",
@@ -44,14 +47,14 @@ def check_data_structure(
         # Check data type
         if str(data_array.dtype) in allowed_dtypes:
             report.add(
-                "5.4",
+                SECTION_ID,
                 f"Data type for {data_var}",
                 "PASS",
                 f"Data type '{data_array.dtype}' is allowed",
             )
         else:
             report.add(
-                "5.4",
+                SECTION_ID,
                 f"Data type for {data_var}",
                 "FAIL",
                 f"Data type '{data_array.dtype}' is not allowed. Allowed types: {allowed_dtypes}",

@@ -3,6 +3,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.5"
 
 
 @log_function_call
@@ -15,7 +18,9 @@ def check_variable_timestep(
     report = ValidationReport()
 
     if "time" not in ds.coords:
-        report.add("7", "Time coordinate presence", "FAIL", "Missing 'time' coordinate")
+        report.add(
+            SECTION_ID, "Time coordinate presence", "FAIL", "Missing 'time' coordinate"
+        )
         return report
 
     try:
@@ -25,7 +30,7 @@ def check_variable_timestep(
 
         if len(unique_diffs) == 1:
             report.add(
-                "7",
+                SECTION_ID,
                 "Timestep consistency",
                 "PASS",
                 "Timestep is consistent throughout the dataset",
@@ -33,14 +38,14 @@ def check_variable_timestep(
         else:
             if allow_variable_timestep:
                 report.add(
-                    "7",
+                    SECTION_ID,
                     "Variable timestep handling",
                     "PASS",
                     f"Variable timesteps detected with {len(unique_diffs)} unique intervals",
                 )
             else:
                 report.add(
-                    "7",
+                    SECTION_ID,
                     "Variable timestep handling",
                     "FAIL",
                     "Variable timesteps detected but not allowed",
@@ -49,21 +54,21 @@ def check_variable_timestep(
             # Check for `consistent_timestep_start` attribute
             if "consistent_timestep_start" in ds.attrs:
                 report.add(
-                    "7",
+                    SECTION_ID,
                     "Consistent timestep start metadata",
                     "PASS",
                     "Dataset includes 'consistent_timestep_start' metadata",
                 )
             else:
                 report.add(
-                    "7",
+                    SECTION_ID,
                     "Consistent timestep start metadata",
                     "WARNING",
                     "Dataset has variable timesteps but is missing 'consistent_timestep_start' metadata",
                 )
     except Exception as e:
         report.add(
-            "7",
+            SECTION_ID,
             "Variable timestep analysis",
             "FAIL",
             f"Failed to analyze variable timesteps: {e}",

@@ -4,6 +4,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.4"
 
 
 @log_function_call
@@ -40,7 +43,7 @@ def check_variable_units(
             if data_var in spec["names"] and units in spec["units"]:
                 valid = True
                 report.add(
-                    "3.3",
+                    SECTION_ID,
                     f"Validation for {data_var}",
                     "PASS",
                     f"Variable '{data_var}' with units '{units}' is valid under '{spec_name}' specification.",
@@ -49,7 +52,7 @@ def check_variable_units(
 
         if not valid:
             report.add(
-                "3.3",
+                SECTION_ID,
                 f"Validation for {data_var}",
                 "FAIL",
                 f"Variable '{data_var}' with units '{units}' is invalid. "

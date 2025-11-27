@@ -2,6 +2,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.2"
 
 
 @log_function_call
@@ -27,7 +30,7 @@ def check_license(
 
     if "license" not in ds.attrs:
         report.add(
-            "4",
+            SECTION_ID,
             "License metadata",
             "FAIL",
             "Missing required 'license' global attribute",
@@ -37,21 +40,21 @@ def check_license(
     license_id = ds.attrs["license"].strip()
     if license_id in recommended:
         report.add(
-            "4",
+            SECTION_ID,
             "License compliance",
             "PASS",
             f"License '{license_id}' is recommended and accepted",
         )
     elif license_id in warn_on_restricted:
         report.add(
-            "4",
+            SECTION_ID,
             "License compliance",
             "WARNING",
             f"License '{license_id}' has restrictions (NC/ND)",
         )
     else:
         report.add(
-            "4",
+            SECTION_ID,
             "License compliance",
             "WARNING",
             f"License '{license_id}' requires case-by-case review",
