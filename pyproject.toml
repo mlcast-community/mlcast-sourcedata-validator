@@ -3,7 +3,7 @@ requires = ["setuptools>=64", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mlcast-validator"
+name = "mlcast-dataset-validator"
 dynamic = ["version"]
 description = "Add your description here"
 readme = "README.md"
