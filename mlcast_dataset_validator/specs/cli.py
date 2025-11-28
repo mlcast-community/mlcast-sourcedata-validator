@@ -54,11 +54,13 @@ def _format_catalog(catalog: Dict[str, Sequence[str]]) -> str:
 
 
 def build_parser(catalog: Dict[str, List[str]]) -> argparse.ArgumentParser:
+    description = (
+        "Run the MLCast dataset validator for a specific data_stage/product combination.\n"
+        "Stages correspond to subpackages under `specs` (e.g., `source_data`)."
+    )
     parser = argparse.ArgumentParser(
-        description=(
-            "Run the MLCast dataset validator for a specific data_stage/product combination. "
-            "Stages correspond to subpackages under `specs` (e.g., `source_data`)."
-        )
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "data_stage",
@@ -122,10 +124,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(_format_catalog(catalog))
         return 0
 
+    if args.data_stage and not args.product:
+        if args.data_stage not in catalog:
+            parser.error(
+                f"Unknown data_stage '{args.data_stage}'. Available data_stages: {', '.join(sorted(catalog))}."
+            )
+        print(f"Implemented specifications for data_stage '{args.data_stage}':")
+        for product in catalog[args.data_stage]:
+            print(f"  - {product}")
+        return 0
+
     if not (args.data_stage and args.product and args.dataset_path):
-        parser.error(
-            "data_stage, product, and dataset_path are required (or use --list)."
-        )
+        parser.print_help()
+        return 1
 
     data_stage = args.data_stage
     product = args.product
