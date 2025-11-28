@@ -12,6 +12,7 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from ..tooling import select_data_var
 from . import SECTION_ID as PARENT_SECTION_ID
 
 SECTION_ID = f"{PARENT_SECTION_ID}.2"
@@ -25,31 +26,9 @@ except Exception:  # pragma: no cover - graceful fallback
     ccrs = None  # type: ignore
 
 
-def _grid_mapping_variables(ds: xr.Dataset) -> set[str]:
-    """Return the set of variable names that serve as CF grid_mapping definitions."""
-    gm_vars: set[str] = set()
-    for data_array in ds.data_vars.values():
-        mapping_name = data_array.attrs.get("grid_mapping")
-        if mapping_name and mapping_name in ds.variables:
-            gm_vars.add(mapping_name)
-    return gm_vars
-
-
 def _select_data_variable(ds: xr.Dataset, preferred: Optional[str]) -> Optional[str]:
     """Choose a data variable to use for sampling."""
-    grid_definitions = _grid_mapping_variables(ds)
-
-    if preferred:
-        if preferred in ds.data_vars and preferred not in grid_definitions:
-            return preferred
-        return None
-
-    for name, data_array in ds.data_vars.items():
-        if name in grid_definitions:
-            continue
-        if data_array.ndim >= 2 and "grid_mapping" in data_array.attrs:
-            return name
-    return None
+    return select_data_var(ds, preferred, require_grid_mapping=True)
 
 
 @log_function_call

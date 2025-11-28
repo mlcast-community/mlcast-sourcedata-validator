@@ -17,6 +17,7 @@ from ...checks.coords.names import check_coordinate_names
 from ...checks.coords.spatial import check_spatial_requirements
 from ...checks.coords.temporal import check_temporal_requirements
 from ...checks.coords.variable_timestep import check_variable_timestep
+from ...checks.data_vars import naming
 from ...checks.data_vars.chunking import check_chunking_strategy
 from ...checks.data_vars.compression import check_compression
 from ...checks.data_vars.data_structure import check_data_structure
@@ -176,15 +177,17 @@ def validate_dataset(
     > "The data variable name SHOULD be a CF convention standard name or use a sensible name from the ECMWF parameter database."
     > "The data variable MUST include the `long_name`, `standard_name` and `units` attributes following CF conventions."
     """
-    # TODO: there is an inconsistency in the spec document here, where to we say what standard names are allowed?
-    # report += check_variable_units(
-    #     ds,
-    #     allowed_units={
-    #         "precip_rate": ["kg m-2 h-1", "mm h-1", "mm/h"],
-    #         "reflectivity": ["dBZ"],
-    #         "precip_amount": ["kg m-2", "mm"],
-    #     },
-    # )
+    allowed_standard_names = (
+        "rainfall_flux",
+        "precipitation_flux",
+        "equivalent_reflectivity_factor",
+        "precipitation_amount",
+        "rainfall_amount",
+    )
+    report += naming.check_names_and_attrs(
+        ds,
+        allowed_standard_names=allowed_standard_names,
+    )
 
     spec_text += """
     ### 4.5 Georeferencing
