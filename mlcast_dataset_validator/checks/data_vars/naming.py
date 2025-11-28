@@ -119,7 +119,8 @@ def check_names_and_attrs(
                 SECTION_ID,
                 "Variable name validation",
                 "FAIL",
-                f"Variable name '{var_name}' is not allowed for standard_name '{standard_name}'.",
+                f"Variable name '{var_name}' is not allowed for standard_name '{standard_name}'. "
+                f"Allowed names: {', '.join(matched_rule['names'])}.",
             )
         else:
             report.add(
@@ -137,7 +138,7 @@ def check_names_and_attrs(
                 "Units validation",
                 "FAIL",
                 f"Units '{units}' are not allowed for standard_name '{standard_name}'. "
-                f"Allowed units: {', '.join(allowed_units)}.",
+                f"Allowed units: {', '.join(allowed_units)} (canonical: {canonical_unit}).",
             )
         elif units != canonical_unit:
             report.add(
