@@ -40,9 +40,38 @@ The validator checks both **specification compliance** and **practical tool comp
     - cartopy can create CRS objects and transform coordinates
     - Cross-tool CRS consistency checks
 
-## How is the tool implemented organized?
+## How is the tool implemented?
 
-*TDB* based on new spec document structure being discussed in https://github.com/mlcast-community/mlcast-sourcedata-validator/pull/4.
+1. **Spec modules are organized by data stage/product**
+   Each validator lives under `mlcast_dataset_validator/specs/<data_stage>/<product>.py`. For example, the radar precipitation spec is found at `specs/source_data/radar_precipitation.py`, while `specs/training_data/` is prepared for future derived products.
+
+2. **Spec sections mirror an `xr.Dataset`**
+   Within each spec module, the validation flow follows the dataset layout (coordinates, variables, global attrs, tool compatibility). This makes it natural to route a dataset through checks that match its structure.
+
+3. **Inline spec text drives each requirement**
+   Every section block contains the human-readable spec text (RFC 2119 wording) followed immediately by function calls that implement the corresponding checks (e.g., `check_coordinate_names`, `check_georeferencing`, `check_gdal_compatibility`). This keeps the specification and enforcement side-by-side.
+
+4. **Checking functions live under `mlcast_dataset_validator/checks/<dataset_section>/<dataset_aspect>.py`**
+   Reusable validators for coordinates, data variables, global attrs, and tool compatibility live under paths like `mlcast_dataset_validator/checks/<dataset_section>/<dataset_aspect>.py:check_<dataset_property>`. Specs import the relevant function(s) for each section.
+
+```
+mlcast_dataset_validator/
+├── specs/
+│   ├── source_data/
+│   │   └── radar_precipitation.py
+│   ├── training_data/
+│   │   └── ... (no specs yet)
+│   └── cli.py
+└── checks/
+    ├── coords/
+    │   ├── names.py (check_coordinate_names)
+    │   ├── spatial.py
+    │   ├── temporal.py
+    │   └── variable_timestep.py
+    ├── data_vars/
+    ├── global_attributes/
+    └── tool_compatibility/
+```
 
 
 ## Example usage
