@@ -1,10 +1,10 @@
-# mlcast-sourcedata-validator
+# mlcast-dataset-validator
 
-Source data validator for the MLCast Intake catalog ([mlcast-datasets](https://github.com/mlcast-community/mlcast-datasets)).
+Dataset set validator for the MLCast Intake catalog ([mlcast-datasets](https://github.com/mlcast-community/mlcast-datasets)).
 
 ## What is this?
 
-This repository contains a validation tool for radar datasets contributed to the [MLCast community](https://github.com/mlcast-community). The validator ensures that 2D radar precipitation/reflectivity composite datasets meet the technical requirements for inclusion in the MLCast data collection.
+This repository contains a validation tool(s) datasets contributed to the [MLCast community](https://github.com/mlcast-community) (currently only radar precipitation source datasets). The validator ensures that the datasets meet the technical requirements for inclusion in the MLCast data collection.
 
 ### Background
 
@@ -16,7 +16,7 @@ This tool addresses two key needs identified in the community:
 
 ### What does it validate?
 
-The validator checks both **specification compliance** and **practical tool compatibility**, for example for radar precipitation datasets it checks:
+The validator checks both **specification compliance** and **practical tool compatibility**, for example for [radar precipitation datasets it checks](mlcast_dataset_validator/specs/source_data/radar_precipitation.py):
 
 - **Minimum Requirements for Dataset Acceptance:**
     - 2D radar composite at 1km resolution or finer
