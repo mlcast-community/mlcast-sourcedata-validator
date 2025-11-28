@@ -160,10 +160,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         storage_options["anon"] = True
 
     logger.info(
-        f"Running {data_stage}/{product} validator (mlcast-dataset-validator ",
-        data_stage,
-        product,
-        __version__,
+        f"Running {data_stage}/{product} validator (mlcast-dataset-validator "
+        f"{__version__})"
     )
 
     report = module.validate_dataset(
