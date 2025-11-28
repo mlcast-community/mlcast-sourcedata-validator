@@ -17,6 +17,7 @@ dependencies = [
     "xarray>=2025.10.0",
     "zarr>=3.1.3",
 ]
+scripts = { mlcast-dv = "mlcast_dataset_validator.specs.cli:main" }
 
 [dependency-groups]
 dev = [

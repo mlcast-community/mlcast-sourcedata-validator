@@ -7,13 +7,11 @@ against this specification. The specification text is written inline with the
 calls to checking operations that match the specification requirements.
 """
 
-import argparse
-from typing import List, Optional
+from typing import Optional
 
 import xarray as xr
 from loguru import logger
 
-from ... import __version__
 from ...checks.coords.future_extension import check_future_timestep
 from ...checks.coords.names import check_coordinate_names
 from ...checks.coords.spatial import check_spatial_requirements
@@ -267,59 +265,3 @@ def validate_dataset(
     report += check_cartopy_compatibility(ds)
 
     return report
-
-
-# -------------------------
-# CLI
-# -------------------------
-@logger.catch
-def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Validate a 2D radar composite Zarr dataset against the MLCast specification."
-    )
-    parser.add_argument(
-        "dataset_path",
-        type=str,
-        help="Path to the Zarr dataset to validate.",
-    )
-    parser.add_argument(
-        "--s3-endpoint-url",
-        type=str,
-        default=None,
-        help="Optional S3 endpoint URL for accessing the Zarr dataset.",
-    )
-    parser.add_argument(
-        "--s3-anon",
-        action="store_true",
-        help="Use anonymous access for S3 storage.",
-    )
-    args = parser.parse_args(argv)
-
-    storage_options = {}
-    if args.s3_endpoint_url:
-        storage_options["endpoint_url"] = args.s3_endpoint_url
-    if args.s3_anon:
-        storage_options["anon"] = True
-
-    # get the spec identifier from the module name
-
-    logger.info(
-        f"Validating with {IDENTIFIER} spec version {VERSION} with mlcast-validator {__version__}"
-    )
-
-    # storage_options must default to None if not set, as some backends
-    # (e.g., local filesystem) do not accept an empty dict.
-    report = validate_dataset(
-        args.dataset_path, storage_options=storage_options or None
-    )
-    report.console_print()
-
-    if report.has_fails():
-        return 1
-    return 0
-
-
-if __name__ == "__main__":
-    import sys
-
-    sys.exit(main())
