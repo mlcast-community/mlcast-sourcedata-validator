@@ -20,6 +20,7 @@ dependencies = [
 
 [project.scripts]
 "mlcast.validate_dataset" = "mlcast_dataset_validator.specs.cli:main"
+"mlcast_dataset_validator" = "mlcast_dataset_validator.specs.cli:main"
 
 [dependency-groups]
 dev = [
