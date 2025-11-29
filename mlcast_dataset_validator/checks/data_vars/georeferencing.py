@@ -4,6 +4,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.5"
 
 
 @log_function_call
@@ -28,7 +31,7 @@ def check_georeferencing(
         data_array = ds[data_var]
         if require_grid_mapping and "grid_mapping" not in data_array.attrs:
             report.add(
-                "5.3",
+                SECTION_ID,
                 f"Grid mapping for {data_var}",
                 "FAIL",
                 f"Data variable '{data_var}' is missing 'grid_mapping' attribute",
@@ -41,21 +44,21 @@ def check_georeferencing(
             missing_attrs = [attr for attr in crs_attrs if attr not in crs_var.attrs]
             if missing_attrs:
                 report.add(
-                    "5.3",
+                    SECTION_ID,
                     f"CRS attributes for {data_var}",
                     "FAIL",
                     f"CRS variable '{grid_mapping}' is missing attributes: {missing_attrs}",
                 )
             else:
                 report.add(
-                    "5.3",
+                    SECTION_ID,
                     f"CRS attributes for {data_var}",
                     "PASS",
                     f"CRS variable '{grid_mapping}' has all required attributes",
                 )
         else:
             report.add(
-                "5.3",
+                SECTION_ID,
                 f"Grid mapping for {data_var}",
                 "FAIL",
                 f"Data variable '{data_var}' references a non-existent grid mapping variable",

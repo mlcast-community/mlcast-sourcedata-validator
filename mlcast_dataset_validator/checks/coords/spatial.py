@@ -2,6 +2,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.3"
 
 
 @log_function_call
@@ -38,21 +41,21 @@ def check_spatial_requirements(
                     and y_res <= max_resolution_km * 1000
                 ):
                     report.add(
-                        "3.1",
+                        SECTION_ID,
                         "Spatial resolution ≤1km",
                         "PASS",
                         f"Resolution ({x_res:.1f}m × {y_res:.1f}m) ≤ {max_resolution_km}km",
                     )
                 else:
                     report.add(
-                        "3.1",
+                        SECTION_ID,
                         "Spatial resolution ≤1km",
                         "FAIL",
                         f"Resolution ({x_res:.1f}m × {y_res:.1f}m) exceeds {max_resolution_km}km limit",
                     )
         except Exception as e:
             report.add(
-                "3.1",
+                SECTION_ID,
                 "Spatial resolution ≤1km",
                 "WARNING",
                 f"Could not verify spatial resolution: {e}",
@@ -72,7 +75,7 @@ def check_spatial_requirements(
         spatial_dims = [d for d in dims if d not in ["time", "t"]]
         if len(spatial_dims) < 2:
             report.add(
-                "3.1",
+                SECTION_ID,
                 "Spatial dimension check",
                 "FAIL",
                 f"Need at least 2 spatial dimensions for {data_var} ({dims})",
@@ -81,14 +84,14 @@ def check_spatial_requirements(
         spatial_sizes = [data_array.sizes[d] for d in spatial_dims]
         if all(s >= min_crop_size[0] for s in spatial_sizes):
             report.add(
-                "3.1",
+                SECTION_ID,
                 "256×256 pixel support",
                 "PASS",
                 f"Spatial dimensions {spatial_sizes} support {min_crop_size[0]}×{min_crop_size[1]} crops",
             )
         else:
             report.add(
-                "3.1",
+                SECTION_ID,
                 "256×256 pixel support",
                 "FAIL",
                 f"Spatial dimensions {spatial_sizes} too small for {min_crop_size[0]}×{min_crop_size[1]} crops",

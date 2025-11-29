@@ -14,16 +14,16 @@ from rich.table import Table
 class Result:
     section: str
     requirement: str
-    level: str  # "FAIL" | "WARNING" | "PASS"
+    status: str  # "FAIL" | "WARNING" | "PASS"
     detail: str = ""
     module: Optional[str] = None
     function: Optional[str] = None
 
     def __post_init__(self):
         valid_levels = {"FAIL", "WARNING", "PASS"}
-        if self.level not in valid_levels:
+        if self.status not in valid_levels:
             raise ValueError(
-                f"Invalid level: {self.level}. Valid levels are: {', '.join(valid_levels)}."
+                f"Invalid status: {self.status}. Valid levels are: {', '.join(valid_levels)}."
             )
 
 
@@ -32,20 +32,22 @@ class ValidationReport:
     ok: bool = True
     results: List[Result] = field(default_factory=list)
 
-    def add(self, section: str, requirement: str, level: str, detail: str = "") -> None:
+    def add(
+        self, section: str, requirement: str, status: str, detail: str = ""
+    ) -> None:
         """
         Add a result to the validation report.
 
         Args:
             section (str): The section where the result occurred.
             requirement (str): The specific requirement that was evaluated.
-            level (str): The severity level of the result ("FAIL", "WARNING", "INFO", "PASS").
+            status (str): The severity status of the result ("FAIL", "WARNING", "INFO", "PASS").
             detail (str, optional): Additional details about the result. Defaults to an empty string.
 
         Returns:
             None
         """
-        self.results.append(Result(section, requirement, level, detail))
+        self.results.append(Result(section, requirement, status, detail))
 
     def summarize(self) -> str:
         """
@@ -54,9 +56,9 @@ class ValidationReport:
         Returns:
             str: A summary string with counts of fails, warnings, and passes.
         """
-        fails = sum(1 for r in self.results if r.level == "FAIL")
-        warns = sum(1 for r in self.results if r.level == "WARNING")
-        passes = sum(1 for r in self.results if r.level == "PASS")
+        fails = sum(1 for r in self.results if r.status == "FAIL")
+        warns = sum(1 for r in self.results if r.status == "WARNING")
+        passes = sum(1 for r in self.results if r.status == "PASS")
         return f"Summary: {fails} fail(s), {warns} warning(s), {passes} pass(es)."
 
     def __iadd__(self, other: "ValidationReport") -> "ValidationReport":
@@ -99,7 +101,7 @@ class ValidationReport:
 
         table.add_column("Section", style="bold")
         table.add_column("Requirement", style="dim")
-        table.add_column("Level", justify="center")
+        table.add_column("Status", justify="center")
         table.add_column("Detail", style="italic")
         table.add_column(
             "Checking function", style="bold"
@@ -117,7 +119,7 @@ class ValidationReport:
             table.add_row(
                 result.section,
                 result.requirement,
-                level_emojis.get(result.level, result.level),
+                level_emojis.get(result.status, result.status),
                 result.detail,
                 fn_fqn,
             )
@@ -132,4 +134,4 @@ class ValidationReport:
         Returns:
             bool: True if there is at least one FAIL result, False otherwise.
         """
-        return any(r.level == "FAIL" for r in self.results)
+        return any(r.status == "FAIL" for r in self.results)

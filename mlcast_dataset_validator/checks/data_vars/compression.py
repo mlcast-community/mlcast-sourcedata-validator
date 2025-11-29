@@ -4,6 +4,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.2"
 
 
 def get_compressor_name(da: xr.DataArray) -> str:
@@ -77,21 +80,21 @@ def check_compression(
         if require_compression:
             if compressor is None:
                 report.add(
-                    "5.2",
+                    SECTION_ID,
                     f"{da.name} array compression for {data_var}",
                     "FAIL",
                     f"{da.name} data array does not use compression",
                 )
             elif compressor == recommended_compression:
                 report.add(
-                    "5.2",
+                    SECTION_ID,
                     f"{da.name} array compression for {data_var}",
                     "PASS",
                     f"{da.name} array uses recommended compression: {recommended_compression}",
                 )
             else:
                 report.add(
-                    "5.2",
+                    SECTION_ID,
                     f"{da.name} array compression for {data_var}",
                     "WARNING",
                     f"{da.name} array uses compression: {compressor}, "
@@ -101,14 +104,14 @@ def check_compression(
             if compressor is None:
                 if require_compression:
                     report.add(
-                        "5.2",
+                        SECTION_ID,
                         f"{da.name} array compression for {data_var}",
                         "FAIL",
                         f"{da.name} data array does not use compression",
                     )
                 elif compressor == recommended_compression:
                     report.add(
-                        "5.2",
+                        SECTION_ID,
                         f"{da.name} array compression for {data_var}",
                         "PASS",
                         f"{da.name} array uses recommended compression: {recommended_compression}",

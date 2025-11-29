@@ -5,6 +5,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.3"
 
 
 def has_consolidated_metadata(ds, storage_options=None):
@@ -53,14 +56,14 @@ def check_zarr_format(
     zarr_format = getattr(ds, "zarr_format", 2)  # Default to Zarr v2
     if zarr_format in allowed_versions:
         report.add(
-            "5.1",
+            SECTION_ID,
             "Zarr version compatibility",
             "PASS",
             f"Using supported Zarr v{zarr_format} format",
         )
     else:
         report.add(
-            "5.1",
+            SECTION_ID,
             "Zarr version compatibility",
             "FAIL",
             f"Unsupported Zarr version: v{zarr_format}",
@@ -69,14 +72,14 @@ def check_zarr_format(
     if zarr_format == 2 and require_consolidated_if_v2:
         if has_consolidated_metadata(ds, storage_options=storage_options):
             report.add(
-                "5.1",
+                SECTION_ID,
                 "Consolidated metadata presence",
                 "PASS",
                 "Zarr v2 dataset has consolidated metadata",
             )
         else:
             report.add(
-                "5.1",
+                SECTION_ID,
                 "Consolidated metadata presence",
                 "FAIL",
                 "Zarr v2 dataset is missing consolidated metadata",
