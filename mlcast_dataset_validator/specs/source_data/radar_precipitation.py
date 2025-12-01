@@ -228,7 +228,13 @@ def validate_dataset(
     report += check_license(
         ds,
         require_spdx=True,
-        recommended=["CC-BY", "CC-BY-SA", "OGL"],
+        recommended=[
+            "CC-BY-SA-2.5",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
+            "GPL-1.0",
+            "GPL",
+        ],
         warn_on_restricted=["NC", "ND"],
     )
 
