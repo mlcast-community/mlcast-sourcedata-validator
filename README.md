@@ -1,14 +1,14 @@
 # mlcast-dataset-validator
 
-Dataset set validator for the MLCast Intake catalog ([mlcast-datasets](https://github.com/mlcast-community/mlcast-datasets)).
+Dataset validator for the MLCast Intake catalog ([mlcast-datasets](https://github.com/mlcast-community/mlcast-datasets)).
 
 ## What is this?
 
-This repository contains a validation tool(s) datasets contributed to the [MLCast community](https://github.com/mlcast-community) (currently only radar precipitation source datasets). The validator ensures that the datasets meet the technical requirements for inclusion in the MLCast data collection.
+This repository contains the validation tool for datasets contributed to the [MLCast community](https://github.com/mlcast-community) (currently only radar precipitation source datasets). The validator ensures that the datasets meet the technical requirements for inclusion in the MLCast data collection.
 
 ### Background
 
-During the MLCast community meeting, multiple entities offered to contribute radar datasets. To streamline the contribution process and ensure data quality, we developed this validator to help data providers verify that their Zarr archives are compliant with MLCast requirements before submission.
+During the MLCast community meeting, multiple entities offered to contribute datasets. To streamline the contribution process and ensure data quality, we developed this validator to help data providers verify that their Zarr archives are compliant with MLCast requirements before submission.
 
 This tool addresses two key needs identified in the community:
 1. **Specification compliance** ([#6](https://github.com/mlcast-community/mlcast-datasets/issues/6)): Validates datasets against the formal MLCast Zarr format specification v1.0 (RFC 2119 keywords)
@@ -76,21 +76,21 @@ mlcast_dataset_validator/
 
 ## Example usage
 
-Until `mllam-sourcedata-validator` is published to PyPI, the easiest way to run it is to use [uv](https://docs.astral.sh/uv/getting-started/installation/) to run it directly from the GitHub repository:
+Until `mllam-dataset-validator` is published to PyPI, the easiest way to run it is to use [uv](https://docs.astral.sh/uv/getting-started/installation/) to run it directly from the GitHub repository:
 
 ```bash
-uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" mlcast.validate_dataset <data_stage> <product> <dataset-path>
+uvx --with "git+https://github.com/mlcast-community/mlcast-dataset-validator" mlcast.validate_dataset <data_stage> <product> <dataset-path>
 ```
 
 I.e. you can validate a local Zarr dataset like this:
 ```bash
-uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" mlcast.validate_dataset source_data radar_precipitation /path/to/radar_precip_source.zarr
+uvx --with "git+https://github.com/mlcast-community/mlcast-dataset-validator" mlcast.validate_dataset source_data radar_precipitation /path/to/radar_precip_source.zarr
 ```
 
 The validator supports also remote zarr hosted in S3 buckets at custom endpoints. We can run it on the Radklim Zarr already available in the intake catalog:
 
 ```bash
-uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" mlcast.validate_dataset source_data radar_precipitation s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/ --s3-endpoint-url https://object-store.os-api.cci2.ecmwf.int --s3-anon
+uvx --with "git+https://github.com/mlcast-community/mlcast-dataset-validator" mlcast.validate_dataset source_data radar_precipitation s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/ --s3-endpoint-url https://object-store.os-api.cci2.ecmwf.int --s3-anon
 ```
 
 Or you can of course clone the repository and run it directly:
