@@ -127,7 +127,7 @@ def check_names_and_attrs(
                 SECTION_ID,
                 "Variable name validation",
                 "PASS",
-                f"Variable name '{var_name}' matches the expected CF/ECMWF list.",
+                f"Variable name '{var_name}' matches the expected CF/ECMWF list for standard_name '{standard_name}'.",
             )
 
         allowed_units = set(matched_rule["units"])
