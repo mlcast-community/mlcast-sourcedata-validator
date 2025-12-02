@@ -1,10 +1,10 @@
-# mlcast-sourcedata-validator
+# mlcast-dataset-validator
 
-Source data validator for the MLCast Intake catalog ([mlcast-datasets](https://github.com/mlcast-community/mlcast-datasets)).
+Dataset set validator for the MLCast Intake catalog ([mlcast-datasets](https://github.com/mlcast-community/mlcast-datasets)).
 
 ## What is this?
 
-This repository contains a validation tool for radar datasets contributed to the [MLCast community](https://github.com/mlcast-community). The validator ensures that 2D radar precipitation/reflectivity composite datasets meet the technical requirements for inclusion in the MLCast data collection.
+This repository contains a validation tool(s) datasets contributed to the [MLCast community](https://github.com/mlcast-community) (currently only radar precipitation source datasets). The validator ensures that the datasets meet the technical requirements for inclusion in the MLCast data collection.
 
 ### Background
 
@@ -16,7 +16,7 @@ This tool addresses two key needs identified in the community:
 
 ### What does it validate?
 
-The validator checks both **specification compliance** and **practical tool compatibility**, for example for radar precipitation datasets it checks:
+The validator checks both **specification compliance** and **practical tool compatibility**, for example for [radar precipitation datasets it checks](mlcast_dataset_validator/specs/source_data/radar_precipitation.py):
 
 - **Minimum Requirements for Dataset Acceptance:**
     - 2D radar composite at 1km resolution or finer
@@ -40,9 +40,38 @@ The validator checks both **specification compliance** and **practical tool comp
     - cartopy can create CRS objects and transform coordinates
     - Cross-tool CRS consistency checks
 
-## How is the tool implemented organized?
+## How is the tool implemented?
 
-*TDB* based on new spec document structure being discussed in https://github.com/mlcast-community/mlcast-sourcedata-validator/pull/4.
+1. **Spec modules are organized by data stage/product**
+   Each validator lives under `mlcast_dataset_validator/specs/<data_stage>/<product>.py`. For example, the source data radar precipitation spec is found at `specs/source_data/radar_precipitation.py`, while `specs/training_data/` is prepared for future ML training datasets derived from source data.
+
+2. **Spec sections mirror an `xr.Dataset`**
+   Within each spec module, the validation flow follows the dataset layout (coordinates, variables, global attrs, tool compatibility). This makes it easy to place new checks in the appropriate section as the spec evolves.
+
+3. **Inline spec text drives each requirement**
+   Every section block contains the human-readable spec text (RFC 2119 wording) followed immediately by function calls that implement the corresponding checks (e.g., `check_coordinate_names`, `check_georeferencing`, `check_gdal_compatibility`). This keeps the specification and enforcement side-by-side.
+
+4. **Checking functions live under `mlcast_dataset_validator/checks/<dataset_section>/<dataset_aspect>.py`**
+   Reusable validators for coordinates, data variables, global attrs, and tool compatibility live under paths like `mlcast_dataset_validator/checks/<dataset_section>/<dataset_aspect>.py:check_<dataset_property>`. Specs import the relevant function(s) for each section.
+
+```
+mlcast_dataset_validator/
+├── specs/
+│   ├── source_data/
+│   │   └── radar_precipitation.py
+│   ├── training_data/
+│   │   └── ... (no specs yet)
+│   └── cli.py
+└── checks/
+    ├── coords/
+    │   ├── names.py (check_coordinate_names)
+    │   ├── spatial.py
+    │   ├── temporal.py
+    │   └── variable_timestep.py
+    ├── data_vars/
+    ├── global_attributes/
+    └── tool_compatibility/
+```
 
 
 ## Example usage
@@ -50,18 +79,18 @@ The validator checks both **specification compliance** and **practical tool comp
 Until `mllam-sourcedata-validator` is published to PyPI, the easiest way to run it is to use [uv](https://docs.astral.sh/uv/getting-started/installation/) to run it directly from the GitHub repository:
 
 ```bash
-uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.radar_precipitation <dataset-path>
+uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" mlcast.validate_dataset <data_stage> <product> <dataset-path>
 ```
 
 I.e. you can validate a local Zarr dataset like this:
 ```bash
-uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.radar_precipitation /path/to/zarr/file.zarr
+uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" mlcast.validate_dataset source_data radar_precipitation /path/to/radar_precip_source.zarr
 ```
 
 The validator supports also remote zarr hosted in S3 buckets at custom endpoints. We can run it on the Radklim Zarr already available in the intake catalog:
 
 ```bash
-uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" python -m mlcast_validator.specs.radar_precipitation --s3-endpoint-url https://object-store.os-api.cci2.ecmwf.int --s3-anon s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/
+uvx --with "git+https://github.com/mlcast-community/mlcast-sourcedata-validator" mlcast.validate_dataset source_data radar_precipitation s3://mlcast-source-datasets/radklim/v0.1.0/5_minutes.zarr/ --s3-endpoint-url https://object-store.os-api.cci2.ecmwf.int --s3-anon
 ```
 
 Or you can of course clone the repository and run it directly:
@@ -69,5 +98,6 @@ Or you can of course clone the repository and run it directly:
 ```bash
 git clone
 cd mlcast-sourcedata-validator
-python -m mlcast_validator.specs.radar_precipitation /path/to/zarr/file.zarr
+pip install -e .
+mlcast.validate_dataset source_data radar_precipitation /path/to/zarr/file.zarr
 ```

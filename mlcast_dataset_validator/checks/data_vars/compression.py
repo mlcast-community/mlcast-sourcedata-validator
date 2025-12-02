@@ -4,6 +4,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.2"
 
 
 def get_compressor_name(da: xr.DataArray) -> str:
@@ -35,21 +38,42 @@ def get_compressor_name(da: xr.DataArray) -> str:
 
     # First, check for native Zarr compressor
     comp = enc.get("compressor") or enc.get("compressors")
-    if comp:
-        name = getattr(comp, "codec_id", comp.__class__.__name__).lower()
+
+    def _extract_name(obj) -> str | None:
+        if obj is None:
+            return None
+        if isinstance(obj, (list, tuple)):
+            for item in obj:
+                name = _extract_name(item)
+                if name:
+                    return name
+            return None
+        if isinstance(obj, str):
+            return obj.lower()
+        name = getattr(obj, "codec_id", None)
+        if isinstance(name, str):
+            return name.lower()
+        if name:
+            return str(name).lower()
+        return obj.__class__.__name__.lower()
+
+    # Handle a single or nested compressor instance
+    name = _extract_name(comp)
+    if name and name != "tuple":
         return name
 
     # Otherwise, fall back to inspecting filters (NetCDF/HDF5-style)
     filters = enc.get("filters") or []
     for f in filters:
-        name = getattr(f, "codec_id", f.__class__.__name__).lower()
+        name = _extract_name(f)
         if any(
-            k in name for k in ("zlib", "gzip", "bz2", "blosc", "zstd", "lz4", "snappy")
+            name and k in name
+            for k in ("zlib", "gzip", "bz2", "blosc", "zstd", "lz4", "snappy")
         ):
             return name
 
     # No compression found
-    return "none"
+    return None
 
 
 @log_function_call
@@ -73,47 +97,34 @@ def check_compression(
     for data_var in data_vars:
         da = ds[data_var]
         compressor = get_compressor_name(da)
+        report_title = f"DataArray compression {da.name}"
 
-        if require_compression:
-            if compressor is None:
-                report.add(
-                    "5.2",
-                    f"{da.name} array compression for {data_var}",
-                    "FAIL",
-                    f"{da.name} data array does not use compression",
-                )
-            elif compressor == recommended_compression:
-                report.add(
-                    "5.2",
-                    f"{da.name} array compression for {data_var}",
-                    "PASS",
-                    f"{da.name} array uses recommended compression: {recommended_compression}",
-                )
-            else:
-                report.add(
-                    "5.2",
-                    f"{da.name} array compression for {data_var}",
-                    "WARNING",
-                    f"{da.name} array uses compression: {compressor}, "
-                    f"recommended is {recommended_compression}",
-                )
+        if require_compression and compressor is None:
+            report.add(
+                SECTION_ID,
+                report_title,
+                "FAIL",
+                f"{da.name} DataArray does not use compression",
+            )
+            continue
+
+        if compressor == recommended_compression:
+            report.add(
+                SECTION_ID,
+                report_title,
+                "PASS",
+                f"{da.name} DataArray uses recommended compression: {recommended_compression}",
+            )
+        elif compressor is None:
+            # Compression not required and none present
+            continue
         else:
-            if compressor is None:
-                if require_compression:
-                    report.add(
-                        "5.2",
-                        f"{da.name} array compression for {data_var}",
-                        "FAIL",
-                        f"{da.name} data array does not use compression",
-                    )
-                elif compressor == recommended_compression:
-                    report.add(
-                        "5.2",
-                        f"{da.name} array compression for {data_var}",
-                        "PASS",
-                        f"{da.name} array uses recommended compression: {recommended_compression}",
-                    )
-                else:
-                    pass
+            report.add(
+                SECTION_ID,
+                report_title,
+                "WARNING",
+                f"{da.name} DataArrays uses compression: {compressor}, "
+                f"recommended is {recommended_compression}",
+            )
 
     return report

@@ -3,6 +3,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.4"
 
 
 @log_function_call
@@ -26,7 +29,7 @@ def check_temporal_requirements(
 
     if "time" not in ds.coords:
         report.add(
-            "3.2", "Time coordinate presence", "FAIL", "Missing 'time' coordinate"
+            SECTION_ID, "Time coordinate presence", "FAIL", "Missing 'time' coordinate"
         )
         return report
 
@@ -36,21 +39,21 @@ def check_temporal_requirements(
         years = time_range.days / 365.25
         if years >= min_years:
             report.add(
-                "3.2",
+                SECTION_ID,
                 "Minimum 3-year coverage",
                 "PASS",
                 f"Temporal coverage: {years:.1f} years (≥{min_years} years)",
             )
         else:
             report.add(
-                "3.2",
+                SECTION_ID,
                 "Minimum 3-year coverage",
                 "FAIL",
                 f"Temporal coverage: {years:.1f} years (<{min_years} years required)",
             )
     except Exception as e:
         report.add(
-            "3.2",
+            SECTION_ID,
             "Temporal coverage analysis",
             "FAIL",
             f"Failed to analyze temporal coverage: {e}",

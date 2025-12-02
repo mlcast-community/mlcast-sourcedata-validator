@@ -3,6 +3,9 @@ import xarray as xr
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
+from . import SECTION_ID as PARENT_SECTION_ID
+
+SECTION_ID = f"{PARENT_SECTION_ID}.2"
 
 
 @log_function_call
@@ -15,7 +18,9 @@ def check_future_timestep(
     report = ValidationReport()
 
     if "time" not in ds.coords:
-        report.add("8", "Time coordinate presence", "FAIL", "Missing 'time' coordinate")
+        report.add(
+            SECTION_ID, "Time coordinate presence", "FAIL", "Missing 'time' coordinate"
+        )
         return report
 
     try:
@@ -25,7 +30,7 @@ def check_future_timestep(
 
         if max_time > current_time:
             report.add(
-                "8",
+                SECTION_ID,
                 "Future timesteps detected",
                 "PASS",
                 f"Dataset includes future timesteps up to {max_time}",
@@ -34,7 +39,7 @@ def check_future_timestep(
             # Check for max_year limit
             if max_time.year > max_year:
                 report.add(
-                    "8",
+                    SECTION_ID,
                     "Future timestep limit",
                     "FAIL",
                     f"Future timesteps extend beyond {max_year}: {max_time.year}",
@@ -43,21 +48,21 @@ def check_future_timestep(
             # Check for `last_valid_timestep` attribute
             if "last_valid_timestep" in ds.attrs:
                 report.add(
-                    "8",
+                    SECTION_ID,
                     "Last valid timestep metadata",
                     "PASS",
                     "Dataset includes 'last_valid_timestep' metadata",
                 )
             else:
                 report.add(
-                    "8",
+                    SECTION_ID,
                     "Last valid timestep metadata",
                     "FAIL",
                     "Dataset is missing 'last_valid_timestep' metadata for future timesteps",
                 )
     except Exception as e:
         report.add(
-            "8",
+            SECTION_ID,
             "Future timestep analysis",
             "FAIL",
             f"Failed to analyze future timesteps: {e}",
