@@ -4,11 +4,7 @@ from typing import Iterator, Optional, Tuple
 
 import xarray as xr
 
-__all__ = [
-    "grid_mapping_definitions",
-    "iter_data_vars",
-    "select_data_var",
-]
+__all__ = ["grid_mapping_definitions", "iter_data_vars", "select_data_var"]
 
 
 def grid_mapping_definitions(ds: xr.Dataset) -> set[str]:
