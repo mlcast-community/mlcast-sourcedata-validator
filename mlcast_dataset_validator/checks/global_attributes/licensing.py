@@ -120,9 +120,6 @@ def check_license(
                 ),
             )
 
-    logger.debug(f"Normalized recommended licenses: {normalized_recommended}")
-    logger.debug(f"Restricted fragments: {restricted_tokens}")
-
     is_recommended = normalized_license in normalized_recommended
     is_restricted = any(
         token in normalized_license.upper() for token in restricted_tokens
