@@ -112,7 +112,7 @@ class ValidationReport:
         for result in self.results:
             if result.module and result.function:
                 fn_fqn = f"{result.module}.{result.function}".removeprefix(
-                    "mlcast_validator.checks."
+                    "mlcast_dataset_validator.checks."
                 )
             else:
                 fn_fqn = "N/A"
