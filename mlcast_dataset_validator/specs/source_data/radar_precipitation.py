@@ -87,7 +87,6 @@ def validate_dataset(
 
     > "Future timesteps MUST have regular timestepping corresponding to the highest (most recent) frequency present in the data."
     > "Future timesteps MUST NOT extend beyond the year 2050."
-    > "A global attribute named `last_valid_timestep` MUST be present to indicate the most recent non-NaN filled timestep."
     """
     report += check_future_timestep(
         ds,
@@ -211,11 +210,11 @@ def validate_dataset(
     spec_text += """
     ### 5.1 Conditional Global Attributes
 
-    > "The following global attributes are CONDITIONAL: `consistent_timestep_start`, `last_valid_timestep`."
+    > "The following global attribute is CONDITIONAL: `consistent_timestep_start`."
     """
     report += check_conditional_global_attributes(
         ds,
-        conditional_attrs=["consistent_timestep_start", "last_valid_timestep"],
+        conditional_attrs=["consistent_timestep_start"],
     )
 
     spec_text += """

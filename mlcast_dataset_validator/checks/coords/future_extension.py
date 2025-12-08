@@ -44,22 +44,6 @@ def check_future_timestep(
                     "FAIL",
                     f"Future timesteps extend beyond {max_year}: {max_time.year}",
                 )
-
-            # Check for `last_valid_timestep` attribute
-            if "last_valid_timestep" in ds.attrs:
-                report.add(
-                    SECTION_ID,
-                    "Last valid timestep metadata",
-                    "PASS",
-                    "Dataset includes 'last_valid_timestep' metadata",
-                )
-            else:
-                report.add(
-                    SECTION_ID,
-                    "Last valid timestep metadata",
-                    "FAIL",
-                    "Dataset is missing 'last_valid_timestep' metadata for future timesteps",
-                )
     except Exception as e:
         report.add(
             SECTION_ID,
