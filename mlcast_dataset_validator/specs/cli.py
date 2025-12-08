@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import importlib
+import inspect
 import pkgutil
 import sys
 from typing import Dict, List, Sequence
+from unittest import mock
 
 from loguru import logger
 
@@ -96,6 +99,14 @@ def build_parser(catalog: Dict[str, List[str]]) -> argparse.ArgumentParser:
         action="store_true",
         help="List available data_stage/product combinations and exit.",
     )
+    parser.add_argument(
+        "--print-spec-markdown",
+        action="store_true",
+        help=(
+            "Print the selected specification as Markdown without running validation checks. "
+            "Requires data_stage and product, dataset_path is optional."
+        ),
+    )
     parser.epilog = "Available combinations:\n" + _format_catalog(catalog)
     return parser
 
@@ -111,6 +122,22 @@ def _load_validator_module(data_stage: str, product: str):
         raise SystemExit(f"Module '{module_name}' does not expose validate_dataset().")
 
     return module
+
+
+def _collect_check_targets(module) -> List[str]:
+    """Collect check functions used by a spec module for mocking."""
+    targets = set()
+    for attr_name, attr_value in vars(module).items():
+        module_name = getattr(attr_value, "__module__", "")
+        if module_name.startswith("mlcast_dataset_validator.checks"):
+            targets.add(f"{module.__name__}.{attr_name}")
+        elif inspect.ismodule(attr_value) and getattr(
+            attr_value, "__name__", ""
+        ).startswith("mlcast_dataset_validator.checks"):
+            for inner_name, inner_value in vars(attr_value).items():
+                if callable(inner_value) and inner_name.startswith("check_"):
+                    targets.add(f"{attr_value.__name__}.{inner_name}")
+    return sorted(targets)
 
 
 @logger.catch
@@ -134,7 +161,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"  - {product}")
         return 0
 
-    if not (args.data_stage and args.product and args.dataset_path):
+    if args.print_spec_markdown:
+        if not (args.data_stage and args.product):
+            parser.error(
+                "--print-spec-markdown requires a data_stage and product to select the specification."
+            )
+    elif not (args.data_stage and args.product and args.dataset_path):
         parser.print_help()
         return 1
 
@@ -164,8 +196,39 @@ def main(argv: Sequence[str] | None = None) -> int:
         f"{__version__})"
     )
 
-    report = module.validate_dataset(
+    validation_result = None
+    spec_text = None
+
+    if args.print_spec_markdown:
+        from .base import ValidationReport
+
+        def _empty_report(*_args, **_kwargs):
+            return ValidationReport()
+
+        with contextlib.ExitStack() as stack:
+            for target in _collect_check_targets(module):
+                stack.enter_context(mock.patch(target, side_effect=_empty_report))
+            validation_result = module.validate_dataset(
+                args.dataset_path or "",
+                storage_options=storage_options or None,
+                run_checks=False,
+            )
+        if isinstance(validation_result, tuple):
+            _, spec_text = validation_result
+        if not spec_text:
+            raise SystemExit(
+                "Specification text could not be retrieved from validate_dataset()."
+            )
+        print(spec_text)
+        return 0
+
+    validation_result = module.validate_dataset(
         args.dataset_path, storage_options=storage_options or None
+    )
+    report, _spec_text = (
+        validation_result
+        if isinstance(validation_result, tuple)
+        else (validation_result, None)
     )
     report.console_print()
 
