@@ -45,7 +45,13 @@ def validate_dataset(
     Returns the validation report alongside the rendered Markdown specification text.
     """
     report = ValidationReport()
-    spec_text = """
+    spec_text = f"""
+    ---
+    data_stage: source_data
+    product: {IDENTIFIER}
+    version: {VERSION}
+    ---
+
     ## 1. Introduction
 
     This document specifies the requirements for 2D radar precipitation and
