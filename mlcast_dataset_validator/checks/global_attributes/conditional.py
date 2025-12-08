@@ -1,7 +1,6 @@
 from typing import Sequence
 
 import xarray as xr
-from loguru import logger
 
 from ...specs.base import ValidationReport
 from ...utils.logging_decorator import log_function_call
@@ -20,18 +19,8 @@ def _requires_variable_timestep_metadata(ds: xr.Dataset) -> bool:
     return has_variable
 
 
-def _requires_future_timestep_metadata(ds: xr.Dataset) -> bool:
-    """Return True if the dataset includes future timesteps."""
-
-    logger.warning(
-        "_requires_future_timestep_metadata is not implemented yet.",
-        UserWarning,
-    )
-
-
 CONDITION_FUNCTIONS = dict(
     consistent_timestep_start=_requires_variable_timestep_metadata,
-    last_valid_timestep=_requires_future_timestep_metadata,
 )
 
 
@@ -47,7 +36,6 @@ def check_conditional_global_attributes(
     The following conditional global attributes are implemented:
 
     - consistent_timestep_start: An ISO 8601 timestamp MAY be present if the dataset has variable timestepping
-    - last_valid_timestep: An ISO 8601 timestamp is REQUIRED if the dataset includes future timesteps
     """
 
     report = ValidationReport()
