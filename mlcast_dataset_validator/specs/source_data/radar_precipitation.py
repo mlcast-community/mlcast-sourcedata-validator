@@ -12,7 +12,6 @@ from typing import Optional
 import xarray as xr
 from loguru import logger
 
-from ...checks.coords.future_extension import check_future_timestep
 from ...checks.coords.names import check_coordinate_names
 from ...checks.coords.spatial import check_spatial_requirements
 from ...checks.coords.temporal import check_temporal_requirements
@@ -83,18 +82,7 @@ def validate_dataset(
     )
 
     spec_text += """
-    ### 3.2 Future Timestep Extension
-
-    > "Future timesteps MUST have regular timestepping corresponding to the highest (most recent) frequency present in the data."
-    > "Future timesteps MUST NOT extend beyond the year 2050."
-    """
-    report += check_future_timestep(
-        ds,
-        max_year=2050,
-    )
-
-    spec_text += """
-    ### 3.3 Spatial Requirements
+    ### 3.2 Spatial Requirements
 
     > "The dataset MUST provide 2D radar composites with a spatial resolution of 1 kilometer or finer."
     > "The valid sensing area MUST support at least one 256×256 pixel square crop that is fully contained within the radar sensing range."
@@ -108,7 +96,7 @@ def validate_dataset(
     )
 
     spec_text += """
-    ### 3.4 Temporal Requirements
+    ### 3.3 Temporal Requirements
 
     > "The dataset MUST contain a minimum of 3 years of continuous temporal coverage."
     > "The timestep MAY be variable throughout the archive."
@@ -120,7 +108,7 @@ def validate_dataset(
     )
 
     spec_text += """
-    ### 3.5 Variable Timestep Handling
+    ### 3.4 Variable Timestep Handling
 
     > "If the archive contains variable timesteps, the timesteps SHOULD follow the natural timestepping of the data collection."
     > "A global attribute named `consistent_timestep_start` MAY be included to indicate the first timestamp where regular timestepping begins."
